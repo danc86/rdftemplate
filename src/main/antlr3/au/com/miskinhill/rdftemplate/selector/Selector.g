@@ -54,8 +54,11 @@ unionSelector returns [Selector<?> result]
 @init {
     List<Selector<?>> selectors = new ArrayList<Selector<?>>();
 }
-    : s=selector { selectors.add(s); }
-      ( '|'
+    : WHITESPACE*
+      s=selector { selectors.add(s); }
+      ( WHITESPACE*
+        '|'
+        WHITESPACE*
         s=selector { selectors.add(s); }
       )*
       {
@@ -71,8 +74,7 @@ selector returns [Selector<?> result]
     Class<? extends Adaptation<?>> adaptationClass;
     Adaptation<?> adaptation = null;
 }
-    : ' '*
-      ( ts=traversingSelector { result = ts; }
+    : ( ts=traversingSelector { result = ts; }
       | { result = new NoopSelector(); }
       )
       ( '#'
@@ -112,7 +114,7 @@ selector returns [Selector<?> result]
         { $result = new SelectorWithAdaptation(result, adaptation); }
       |
       )
-      ' '*
+      WHITESPACE*
     ;
 
 traversingSelector returns [TraversingSelector result]
@@ -120,7 +122,9 @@ traversingSelector returns [TraversingSelector result]
     result = new TraversingSelector();
 }
     : t=traversal { $result.addTraversal(t); }
-      ( '/'
+      ( WHITESPACE*
+        '/'
+        WHITESPACE*
         t=traversal { $result.addTraversal(t); }
       ) *
     ;
@@ -130,26 +134,35 @@ traversal returns [Traversal result]
     result = new Traversal();
 }
     : ( '!' { $result.setInverse(true); }
+        WHITESPACE*
       | // optional
       )
       nsprefix=XMLTOKEN { $result.setPropertyNamespace(ns($nsprefix.text)); }
       ':'
       localname=XMLTOKEN { $result.setPropertyLocalName($localname.text); }
       ( '['
+        WHITESPACE*
         p=booleanPredicate { $result.setPredicate(p); }
+        WHITESPACE*
         ']'
       | // optional
       )
       ( '('
+        WHITESPACE*
         so=sortOrder { $result.addSortOrderComparator(so); }
-        ( ','
+        ( WHITESPACE*
+          ','
+          WHITESPACE*
           so=sortOrder { $result.addSortOrderComparator(so); }
         )*
+        WHITESPACE*
         ')'
       | // optional
       )
       ( '['
+        WHITESPACE*
         subscript=INTEGER { $result.setSubscript(Integer.parseInt($subscript.text)); }
+        WHITESPACE*
         ']'
       | // optional
       )
@@ -160,6 +173,7 @@ sortOrder returns [SelectorComparator<? extends Comparable<?>> result]
     result = new SelectorComparator();
 }
     : ( '~' { $result.setReversed(true); }
+        WHITESPACE*
       | // optional
       )
       s=selector { $result.setSelector((Selector) s.withResultType(Comparable.class)); }
@@ -168,9 +182,9 @@ sortOrder returns [SelectorComparator<? extends Comparable<?>> result]
 booleanPredicate returns [Predicate result]
     : ( p=predicate { result = p; }
       | left=predicate
-        ' '+
+        WHITESPACE+
         'and'
-        ' '+
+        WHITESPACE+
         right=booleanPredicate
         { result = new BooleanAndPredicate(left, right); }
       )
@@ -186,7 +200,9 @@ predicate returns [Predicate result]
                 if (predicateClass == null)
                     throw new InvalidSelectorSyntaxException("No predicate named " + $predicateName.text);
             }
+      WHITESPACE*
       '='
+      WHITESPACE*
       ( sq=SINGLE_QUOTED {
                 try {
                     result = predicateClass.getConstructor(String.class).newInstance($sq.text);
@@ -215,3 +231,4 @@ SINGLE_QUOTED : '\'' ( options {greedy=false;} : . )* '\''
         String txt = getText();
         setText(txt.substring(1, txt.length() -1));
     };
+WHITESPACE : (' '|'\n'|'\r'|'\t') ;

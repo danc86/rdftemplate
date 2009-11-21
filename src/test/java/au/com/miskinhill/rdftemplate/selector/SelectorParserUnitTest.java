@@ -41,6 +41,14 @@ public class SelectorParserUnitTest {
     }
     
     @Test
+    public void shouldRecogniseMultipleTraversalsWithWhitespace() throws Exception {
+        Selector<RDFNode> selector = factory.get("dc:creator / foaf:name").withResultType(RDFNode.class);
+        assertThat(selector, selector(
+                traversal(DCTerms.NS, "creator"),
+                traversal(FOAF_NS, "name")));
+    }
+    
+    @Test
     public void shouldRecogniseInverseTraversal() throws Exception {
         Selector<RDFNode> selector = factory.get("!dc:isPartOf/!dc:isPartOf").withResultType(RDFNode.class);
         assertThat(selector, selector(
