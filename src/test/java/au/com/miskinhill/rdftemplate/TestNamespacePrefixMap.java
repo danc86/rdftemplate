@@ -25,6 +25,7 @@ public final class TestNamespacePrefixMap extends HashMap<String, String> {
         put("foaf", FOAF_NS);
         put("rdf", RDF.getURI());
         put("sioc", "http://rdfs.org/sioc/ns#");
+        put("awol", "http://bblfish.net/work/atom-owl/2006-06-06/#");
         put("lingvoj", "http://www.lingvoj.org/ontology#");
     }
     

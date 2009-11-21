@@ -1,8 +1,8 @@
 package au.com.miskinhill.rdftemplate.selector;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.io.InputStream;
 import java.util.List;
@@ -189,6 +189,27 @@ public class SelectorEvaluationUnitTest {
         String result = selectorFactory.get("!sioc:has_container/dc:created#formatted-dt('yyyy-MM-dd\"T\"HH:mm:ssZZ')")
                 .withResultType(String.class).singleResult(forum);
         assertThat(result, equalTo("2009-06-15T18:21:32+10:00"));
+    }
+    
+    @Test
+    public void shouldEvaluateStringLVAdaptation() throws Exception {
+        List<String> results = selectorFactory.get("dc:language/lingvoj:iso1#string-lv")
+                .withResultType(String.class).result(journal);
+        assertThat(results.size(), equalTo(2));
+        assertThat(results, hasItems("en", "ru"));
+    }
+    
+    @Test
+    public void stringLVAdaptationShouldStripTagsFromXMLLiteral() throws Exception {
+        String result = selectorFactory.get("!sioc:has_container/sioc:content/awol:body#string-lv")
+                .withResultType(String.class).singleResult(forum);
+        assertEquals("To coincide with the publication of our second issue, " +
+        		"the 2008 volume of Australian Slavonic and East European Studies, " +
+        		"we are making available two new data feeds: an Atom feed of all " +
+        		"journal issues published on this site, and the complete RDF dataset " +
+        		"underlying the site. We hope this helps our users and aggregators " +
+        		"to discover new content as it is published.",
+        		result.trim().replaceAll("\\s+", " "));
     }
     
 }
