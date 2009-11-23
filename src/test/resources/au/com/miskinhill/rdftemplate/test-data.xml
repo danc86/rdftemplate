@@ -79,6 +79,10 @@
     <mhs:onlinePublicationDate rdf:datatype="http://www.w3.org/TR/xmlschema-2/#date">2009-03-01</mhs:onlinePublicationDate>
     <mhs:coverThumbnail rdf:resource="http://miskinhill.com.au/journals/test/2:1/cover.thumb.jpg"/>
   </mhs:Issue>
+    <mhs:ContentsSection rdf:about="http://miskinhill.com.au/journals/test/2:1/#stuff">
+        <dc:isPartOf rdf:resource="http://miskinhill.com.au/journals/test/2:1/" />
+        <mhs:sectionHeading>Stuff</mhs:sectionHeading>
+    </mhs:ContentsSection>
   <mhs:Article rdf:about="http://miskinhill.com.au/journals/test/1:1/article">
     <dc:isPartOf rdf:resource="http://miskinhill.com.au/journals/test/1:1/"/>
     <dc:creator rdf:resource="http://miskinhill.com.au/authors/test-author"/>
@@ -133,6 +137,7 @@
     <dc:isPartOf rdf:resource="http://miskinhill.com.au/journals/test/2:1/"/>
     <mhs:reviews rdf:resource="http://miskinhill.com.au/cited/books/test"/>
     <dc:creator rdf:resource="http://miskinhill.com.au/authors/another-author"/>
+    <mhs:inSection rdf:resource="http://miskinhill.com.au/journals/test/2:1/#stuff" />
   </mhs:Review>
   <mhs:Obituary rdf:about="http://miskinhill.com.au/journals/test/1:1/in-memoriam-john-doe">
     <dc:title xml:lang="en">In memoriam John Doe</dc:title>

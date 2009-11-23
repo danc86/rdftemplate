@@ -69,10 +69,10 @@ public class SelectorEvaluationUnitTest {
     
     @Test
     public void shouldEvaluateInverseTraversal() throws Exception {
-        List<RDFNode> results = selectorFactory.get("!mhs:isIssueOf/!dc:isPartOf")
-                .withResultType(RDFNode.class).result(journal);
-        assertThat(results.size(), equalTo(4));
-        assertThat(results, hasItems((RDFNode) article, (RDFNode) review, (RDFNode) anotherReview, (RDFNode) obituary));
+        List<RDFNode> results = selectorFactory.get("!dc:isPartOf")
+                .withResultType(RDFNode.class).result(issue);
+        assertThat(results.size(), equalTo(3));
+        assertThat(results, hasItems((RDFNode) article, (RDFNode) review, (RDFNode) obituary));
     }
     
     @Test
@@ -120,6 +120,13 @@ public class SelectorEvaluationUnitTest {
         String result = selectorFactory.get("dc:identifier[uri-prefix='urn:issn:']#uri-slice(9)")
                 .withResultType(String.class).singleResult(journal);
         assertThat(result, equalTo("12345678"));
+    }
+    
+    @Test
+    public void shouldEvaluateUriAnchorAdaptation() throws Exception {
+        String result = selectorFactory.get("mhs:inSection#uri-anchor")
+                .withResultType(String.class).singleResult(anotherReview);
+        assertThat(result, equalTo("stuff"));
     }
     
     @Test

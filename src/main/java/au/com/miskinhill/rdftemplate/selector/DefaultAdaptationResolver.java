@@ -9,6 +9,7 @@ public class DefaultAdaptationResolver implements AdaptationResolver {
     static {
         ADAPTATIONS.put("uri", UriAdaptation.class);
         ADAPTATIONS.put("uri-slice", UriSliceAdaptation.class);
+        ADAPTATIONS.put("uri-anchor", UriAnchorAdaptation.class);
         ADAPTATIONS.put("lv", LiteralValueAdaptation.class);
         ADAPTATIONS.put("comparable-lv", ComparableLiteralValueAdaptation.class);
         ADAPTATIONS.put("string-lv", StringLiteralValueAdaptation.class);
