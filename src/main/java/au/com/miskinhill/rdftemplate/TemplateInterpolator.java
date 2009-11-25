@@ -122,10 +122,20 @@ public class TemplateInterpolator {
                     StartElement start = (StartElement) event;
                     if (start.getName().equals(IF_ACTION_QNAME)) {
                         Attribute testAttribute = start.getAttributeByName(new QName("test"));
-                        if (testAttribute == null)
-                            throw new TemplateSyntaxException("rdf:if must have a test attribute");
-                        Selector<?> selector = selectorFactory.get(testAttribute.getValue());
-                        if (selector.result(node).isEmpty()) {
+                        Attribute notAttribute = start.getAttributeByName(new QName("not"));
+                        String condition;
+                        boolean negate = false;
+                        if (testAttribute != null && notAttribute != null)
+                            throw new TemplateSyntaxException("test and not attribute on rdf:if are mutually exclusive");
+                        else if (testAttribute != null)
+                            condition = testAttribute.getValue();
+                        else if (notAttribute != null) {
+                            condition = notAttribute.getValue();
+                            negate = true;
+                        } else
+                            throw new TemplateSyntaxException("rdf:if must have a test attribute or a not attribute");
+                        List<?> selectorResult = selectorFactory.get(condition).result(node);
+                        if (negate ? !selectorResult.isEmpty() : selectorResult.isEmpty()) {
                             consumeTree(start, reader);
                             break;
                         } else {

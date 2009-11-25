@@ -6,5 +6,7 @@
 
 <rdf:if test="mhs:biographicalNotes">element test</rdf:if>
 
+<rdf:if not="mhs:biographicalNotes">negated test</rdf:if>
+
 </body>
 </html>

@@ -64,12 +64,14 @@ public class TemplateInterpolatorUnitTest {
         assertThat(result, containsString("attribute test"));
         assertThat(result, containsString("element test"));
         assertThat(result, not(containsString("rdf:if")));
+        assertThat(result, not(containsString("negated test")));
         
         Resource authorWithoutNotes = model.getResource("http://miskinhill.com.au/authors/another-author");
         result = templateInterpolator.interpolate(
                 new InputStreamReader(this.getClass().getResourceAsStream("conditional.xml")), authorWithoutNotes);
         assertThat(result, not(containsString("attribute test")));
         assertThat(result, not(containsString("element test")));
+        assertThat(result, containsString("negated test"));
     }
     
     @Test
