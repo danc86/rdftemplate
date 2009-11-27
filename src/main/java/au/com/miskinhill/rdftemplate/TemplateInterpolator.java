@@ -21,6 +21,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLResolver;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
@@ -28,11 +29,6 @@ import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -55,18 +51,16 @@ public class TemplateInterpolator {
     private static final QName XML_LANG_QNAME = new QName(XMLConstants.XML_NS_URI, "lang", XMLConstants.XML_NS_PREFIX);
     private static final String XHTML_NS_URI = "http://www.w3.org/1999/xhtml";
     
-    private static final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-    private static final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
-    private static final XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-    private static final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-    static {
-        inputFactory.setProperty("javax.xml.stream.isCoalescing", true);
-    }
+    private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+    private final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
+    private final XMLEventFactory eventFactory = XMLEventFactory.newInstance();
     
     private final SelectorFactory selectorFactory;
     
     public TemplateInterpolator(SelectorFactory selectorFactory) {
         this.selectorFactory = selectorFactory;
+        inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+        outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
     }
     
     public String interpolate(Reader reader, RDFNode node) {
@@ -80,18 +74,9 @@ public class TemplateInterpolator {
                 }
             };
             interpolate(reader, node, destination);
-            
-            // all this to get self-closing tags -- weird?? XXX
-            StringWriter transformedWriter = new StringWriter();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.transform(new StreamSource(new StringReader(writer.toString())),
-                    new StreamResult(transformedWriter));
-    
-            return transformedWriter.toString();
+            return writer.toString();
         } catch (XMLStreamException e) {
             throw new TemplateSyntaxException(e);            
-        } catch (TransformerException e) {
-            throw new TemplateSyntaxException(e);
         }
     }
     
@@ -285,7 +270,7 @@ public class TemplateInterpolator {
         return cloneStartWithAttributes(start, replacementAttributes);
     }
     
-    private static StartElement cloneStartWithAttributes(StartElement start, Iterable<Attribute> attributes) {
+    private StartElement cloneStartWithAttributes(StartElement start, Iterable<Attribute> attributes) {
         return eventFactory.createStartElement(
                 start.getName().getPrefix(),
                 start.getName().getNamespaceURI(),

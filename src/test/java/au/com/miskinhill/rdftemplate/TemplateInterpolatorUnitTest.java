@@ -53,7 +53,7 @@ public class TemplateInterpolatorUnitTest {
         String result = templateInterpolator.interpolate(
                 new InputStreamReader(this.getClass().getResourceAsStream("replace-xml.xml")), journal);
         assertThat(result, containsString(
-                "<div xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\"><p><em>Test Journal</em> is a journal.</p></div>"));
+                "<div lang=\"en\"><p><em>Test Journal</em> is a journal.</p></div>"));
     }
     
     @Test

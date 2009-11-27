@@ -83,6 +83,12 @@
         	<artifactId>spring-context</artifactId>
         	<version>3.0.0.RC1</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>4.0.6</version>
+            <scope>runtime</scope> <!-- because JDK6 StAX impl is shit -->
+        </dependency>
     </dependencies>
     
 </project>
