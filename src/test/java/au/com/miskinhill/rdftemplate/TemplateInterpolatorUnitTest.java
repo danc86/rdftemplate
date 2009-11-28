@@ -1,8 +1,8 @@
 package au.com.miskinhill.rdftemplate;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertThat;
-import static org.junit.matchers.JUnitMatchers.containsString;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+import static org.junit.matchers.JUnitMatchers.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -92,6 +92,15 @@ public class TemplateInterpolatorUnitTest {
         assertThat(result, containsString("<span>http://miskinhill.com.au/journals/test/2:1/</span>"));
         assertThat(result, containsString("<p>http://miskinhill.com.au/journals/test/1:1/</p>"));
         assertThat(result, containsString("<p>http://miskinhill.com.au/journals/test/2:1/</p>"));
+    }
+    
+    @Test
+    public void shouldStripRdfNamespaceDeclarations() throws Exception {
+        Resource author = model.getResource("http://miskinhill.com.au/authors/test-author");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("namespaces.xml")), author);
+        assertThat(result, not(containsString("xmlns:rdf=\"http://code.miskinhill.com.au/rdftemplate/\"")));
+        assertThat(result, not(containsString("rdf:")));
     }
     
 }

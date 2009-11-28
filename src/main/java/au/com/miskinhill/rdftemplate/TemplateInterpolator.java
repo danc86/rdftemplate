@@ -21,12 +21,12 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLResolver;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
 import javax.xml.stream.events.EndElement;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
@@ -173,7 +173,7 @@ public class TemplateInterpolator {
                                 consumeTree(start, reader);
                                 break;
                             }
-                            start = cloneStartWithAttributes(start, cloneAttributesWithout(start, IF_ACTION_QNAME));
+                            start = cloneStart(start, cloneAttributesWithout(start, IF_ACTION_QNAME), cloneNamespacesWithoutRdf(start));
                         }
                         if (contentAttribute != null && forAttribute != null) {
                             throw new TemplateSyntaxException("rdf:for and rdf:content cannot both be present on an element");
@@ -202,7 +202,7 @@ public class TemplateInterpolator {
                             writeTreeForContent(writer, replacement);
                             writer.add(eventFactory.createEndElement(start.getName(), start.getNamespaces()));
                         } else if (forAttribute != null) {
-                            start = cloneStartWithAttributes(start, cloneAttributesWithout(start, FOR_ACTION_QNAME));
+                            start = cloneStart(start, cloneAttributesWithout(start, FOR_ACTION_QNAME), cloneNamespacesWithoutRdf(start));
                             List<XMLEvent> tree = consumeTree(start, reader);
                             Selector<RDFNode> selector = selectorFactory.get(forAttribute.getValue()).withResultType(RDFNode.class);
                             for (RDFNode subNode : selector.result(node)) {
@@ -267,17 +267,28 @@ public class TemplateInterpolator {
             replacementAttributes.add(eventFactory.createAttribute(attribute.getName(),
                     replacementValue));
         }
-        return cloneStartWithAttributes(start, replacementAttributes);
+        return cloneStart(start, replacementAttributes, cloneNamespacesWithoutRdf(start));
     }
     
-    private StartElement cloneStartWithAttributes(StartElement start, Iterable<Attribute> attributes) {
+    private StartElement cloneStart(StartElement start, Iterable<Attribute> attributes, Iterable<Namespace> namespaces) {
         return eventFactory.createStartElement(
                 start.getName().getPrefix(),
                 start.getName().getNamespaceURI(),
                 start.getName().getLocalPart(),
                 attributes.iterator(),
-                start.getNamespaces(),
+                namespaces.iterator(),
                 start.getNamespaceContext());
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Set<Namespace> cloneNamespacesWithoutRdf(StartElement start) {
+        Set<Namespace> clonedNamespaces = new LinkedHashSet<Namespace>();
+        for (Iterator<Namespace> it = start.getNamespaces(); it.hasNext(); ) {
+            Namespace namespace = it.next();
+            if (!namespace.getNamespaceURI().equals(NS))
+                clonedNamespaces.add(namespace);
+        }
+        return clonedNamespaces;
     }
     
     private static final Pattern SUBSTITUTION_PATTERN = Pattern.compile("\\$\\{([^}]*)\\}");
