@@ -23,7 +23,7 @@ import au.com.miskinhill.rdftemplate.datatype.DateTimeDataType;
 public class SelectorEvaluationUnitTest {
     
     private Model m;
-    private Resource journal, issue, article, citedArticle, author, anotherAuthor, book, review, anotherReview, obituary, en, ru, forum;
+    private Resource journal, issue, article, multiAuthorArticle, citedArticle, author, anotherAuthor, book, review, anotherReview, obituary, en, ru, forum;
     private AntlrSelectorFactory selectorFactory;
     
     @BeforeClass
@@ -40,6 +40,7 @@ public class SelectorEvaluationUnitTest {
         journal = m.createResource("http://miskinhill.com.au/journals/test/");
         issue = m.createResource("http://miskinhill.com.au/journals/test/1:1/");
         article = m.createResource("http://miskinhill.com.au/journals/test/1:1/article");
+        multiAuthorArticle = m.createResource("http://miskinhill.com.au/journals/test/1:1/multi-author-article");
         citedArticle = m.createResource("http://miskinhill.com.au/cited/journals/asdf/1:1/article");
         author = m.createResource("http://miskinhill.com.au/authors/test-author");
         anotherAuthor = m.createResource("http://miskinhill.com.au/authors/another-author");
@@ -71,8 +72,8 @@ public class SelectorEvaluationUnitTest {
     public void shouldEvaluateInverseTraversal() throws Exception {
         List<RDFNode> results = selectorFactory.get("!dc:isPartOf")
                 .withResultType(RDFNode.class).result(issue);
-        assertThat(results.size(), equalTo(3));
-        assertThat(results, hasItems((RDFNode) article, (RDFNode) review, (RDFNode) obituary));
+        assertThat(results.size(), equalTo(4));
+        assertThat(results, hasItems((RDFNode) article, (RDFNode) multiAuthorArticle, (RDFNode) review, (RDFNode) obituary));
     }
     
     @Test
@@ -161,16 +162,16 @@ public class SelectorEvaluationUnitTest {
     public void shouldEvaluateAndCombinationOfPredicates() throws Exception {
         List<RDFNode> results = selectorFactory.get("!dc:creator[type=mhs:Article and uri-prefix='http://miskinhill.com.au/journals/']")
                 .withResultType(RDFNode.class).result(author);
-        assertThat(results.size(), equalTo(1));
-        assertThat(results, hasItems((RDFNode) article));
+        assertThat(results.size(), equalTo(2));
+        assertThat(results, hasItems((RDFNode) article, (RDFNode) multiAuthorArticle));
     }
     
     @Test
     public void shouldEvaluateUnion() throws Exception {
         List<RDFNode> results = selectorFactory.get("!dc:creator | !mhs:translator")
                 .withResultType(RDFNode.class).result(anotherAuthor);
-        assertThat(results.size(), equalTo(3));
-        assertThat(results, hasItems((RDFNode) article, (RDFNode) citedArticle, (RDFNode) anotherReview));
+        assertThat(results.size(), equalTo(4));
+        assertThat(results, hasItems((RDFNode) article, (RDFNode) multiAuthorArticle, (RDFNode) citedArticle, (RDFNode) anotherReview));
     }
     
     @Test
@@ -178,10 +179,11 @@ public class SelectorEvaluationUnitTest {
         List<RDFNode> results = selectorFactory.get("!dc:creator[uri-prefix='http://miskinhill.com.au/journals/']" +
         		"(~dc:isPartOf/mhs:publicationDate#comparable-lv,mhs:startPage#comparable-lv)")
                 .withResultType(RDFNode.class).result(author);
-        assertThat(results.size(), equalTo(3));
+        assertThat(results.size(), equalTo(4));
         assertThat(results.get(0), equalTo((RDFNode) obituary));
         assertThat(results.get(1), equalTo((RDFNode) article));
-        assertThat(results.get(2), equalTo((RDFNode) review));
+        assertThat(results.get(2), equalTo((RDFNode) multiAuthorArticle));
+        assertThat(results.get(3), equalTo((RDFNode) review));
     }
     
     @Test

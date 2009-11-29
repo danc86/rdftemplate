@@ -97,6 +97,21 @@
     <foaf:givenNames>Test</foaf:givenNames>
     <mhs:biographicalNotes>This person does stuff.</mhs:biographicalNotes>
   </mhs:Author>
+  <mhs:Article rdf:about="http://miskinhill.com.au/journals/test/1:1/multi-author-article">
+    <dc:isPartOf rdf:resource="http://miskinhill.com.au/journals/test/1:1/"/>
+    <dc:creator rdf:resource="http://miskinhill.com.au/authors/test-author"/>
+    <dc:creator rdf:resource="http://miskinhill.com.au/authors/another-author"/>
+    <dc:title>Multi-author article</dc:title>
+    <mhs:startPage rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">36</mhs:startPage>
+    <mhs:endPage rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">75</mhs:endPage>
+    <mhs:authorOrder>
+      <rdf:Description>
+        <rdf:_1 rdf:resource="http://miskinhill.com.au/authors/another-author"/>
+        <rdf:_2 rdf:resource="http://miskinhill.com.au/authors/test-author"/>
+        <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq"/>
+      </rdf:Description>
+    </mhs:authorOrder>
+  </mhs:Article>
   <mhs:Journal rdf:about="http://miskinhill.com.au/cited/journals/asdf/">
     <dc:title xml:lang="en">A Cited Journal</dc:title>
     <dc:identifier rdf:resource="urn:issn:87654321"/>

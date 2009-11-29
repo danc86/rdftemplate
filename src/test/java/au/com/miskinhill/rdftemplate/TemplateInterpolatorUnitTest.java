@@ -103,4 +103,38 @@ public class TemplateInterpolatorUnitTest {
         assertThat(result, not(containsString("rdf:")));
     }
     
+    @Test
+    public void forShouldIterateRdfSeqsInOrder() throws Exception {
+        Resource article = model.getResource("http://miskinhill.com.au/journals/test/1:1/multi-author-article");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("for-seq.xml")), article);
+        assertThat(result, containsString("Another Author\n\nTest Author"));
+    }
+    
+    @Test
+    public void joinShouldIterateRdfSeqsInOrder() throws Exception {
+        Resource article = model.getResource("http://miskinhill.com.au/journals/test/1:1/multi-author-article");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("join-seq.xml")), article);
+        assertThat(result, containsString("<p><a href=\"http://miskinhill.com.au/authors/another-author\">Another Author</a>, " +
+        		"<a href=\"http://miskinhill.com.au/authors/test-author\">Test Author</a></p>"));
+    }
+    
+    @Test
+    public void forShouldWorkForSingleResult() throws Exception {
+        Resource journal = model.getResource("http://miskinhill.com.au/cited/journals/asdf/");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("for.xml")), journal);
+        assertThat(result, containsString("<span>http://miskinhill.com.au/cited/journals/asdf/1:1/</span>"));
+        assertThat(result, containsString("<p>http://miskinhill.com.au/cited/journals/asdf/1:1/</p>"));
+    }
+    
+    @Test
+    public void joinShouldWorkForSingleResult() throws Exception {
+        Resource review = model.getResource("http://miskinhill.com.au/journals/test/1:1/reviews/review");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("join.xml")), review);
+        assertThat(result, containsString("<p><a href=\"http://miskinhill.com.au/authors/test-author\">Test Author</a></p>"));
+    }
+    
 }
