@@ -14,7 +14,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventReader;
@@ -32,24 +31,14 @@ import javax.xml.stream.events.XMLEvent;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
-import org.apache.commons.lang.StringUtils;
 
+import au.com.miskinhill.rdftemplate.selector.InvalidSelectorSyntaxException;
 import au.com.miskinhill.rdftemplate.selector.Selector;
 import au.com.miskinhill.rdftemplate.selector.SelectorFactory;
 
 public class TemplateInterpolator {
     
     public static final String NS = "http://code.miskinhill.com.au/rdftemplate/";
-    public static final String CONTENT_ACTION = "content";
-    private static final QName CONTENT_ACTION_QNAME = new QName(NS, CONTENT_ACTION);
-    public static final String FOR_ACTION = "for";
-    private static final QName FOR_ACTION_QNAME = new QName(NS, FOR_ACTION);
-    public static final String IF_ACTION = "if";
-    private static final QName IF_ACTION_QNAME = new QName(NS, IF_ACTION);
-    public static final String JOIN_ACTION = "join";
-    private static final QName JOIN_ACTION_QNAME = new QName(NS, JOIN_ACTION);
-    private static final QName XML_LANG_QNAME = new QName(XMLConstants.XML_NS_URI, "lang", XMLConstants.XML_NS_PREFIX);
-    private static final String XHTML_NS_URI = "http://www.w3.org/1999/xhtml";
     
     private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     private final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
@@ -105,108 +94,124 @@ public class TemplateInterpolator {
             switch (event.getEventType()) {
                 case XMLStreamConstants.START_ELEMENT: {
                     StartElement start = (StartElement) event;
-                    if (start.getName().equals(IF_ACTION_QNAME)) {
+                    if (start.getName().equals(IfAction.ACTION_QNAME)) {
                         Attribute testAttribute = start.getAttributeByName(new QName("test"));
                         Attribute notAttribute = start.getAttributeByName(new QName("not"));
                         String condition;
                         boolean negate = false;
                         if (testAttribute != null && notAttribute != null)
-                            throw new TemplateSyntaxException("test and not attribute on rdf:if are mutually exclusive");
+                            throw new TemplateSyntaxException(start.getLocation(), "test and not attribute on rdf:if are mutually exclusive");
                         else if (testAttribute != null)
                             condition = testAttribute.getValue();
                         else if (notAttribute != null) {
                             condition = notAttribute.getValue();
                             negate = true;
                         } else
-                            throw new TemplateSyntaxException("rdf:if must have a test attribute or a not attribute");
-                        List<?> selectorResult = selectorFactory.get(condition).result(node);
-                        if (negate ? !selectorResult.isEmpty() : selectorResult.isEmpty()) {
-                            consumeTree(start, reader);
-                            break;
-                        } else {
-                            List<XMLEvent> events = consumeTree(start, reader);
-                            // discard the enclosing rdf:if element
-                            events.remove(events.size() - 1);
-                            events.remove(0);
-                            interpolate(events.iterator(), node, writer);
+                            throw new TemplateSyntaxException(start.getLocation(), "rdf:if must have a test attribute or a not attribute");
+                        Selector<?> conditionSelector;
+                        try {
+                            conditionSelector = selectorFactory.get(condition);
+                        } catch (InvalidSelectorSyntaxException e) {
+                            throw new TemplateSyntaxException(start.getLocation(), e);
                         }
-                    } else if (start.getName().equals(JOIN_ACTION_QNAME)) {
+                        List<XMLEvent> tree = consumeTree(start, reader);
+                        // discard enclosing rdf:if
+                        tree.remove(tree.size() - 1);
+                        tree.remove(0);
+                        IfAction action = new IfAction(tree, conditionSelector, negate);
+                        try {
+                            action.evaluate(this, node, writer);
+                        } catch (Exception e) {
+                            throw new TemplateInterpolationException(start.getLocation(), action, node, e);
+                        }
+                    } else if (start.getName().equals(JoinAction.ACTION_QNAME)) {
                         Attribute eachAttribute = start.getAttributeByName(new QName("each"));
                         if (eachAttribute == null)
-                            throw new TemplateSyntaxException("rdf:join must have an each attribute");
+                            throw new TemplateSyntaxException(start.getLocation(), "rdf:join must have an each attribute");
                         String separator = "";
                         Attribute separatorAttribute = start.getAttributeByName(new QName("separator"));
                         if (separatorAttribute != null)
                             separator = separatorAttribute.getValue();
-                        Selector<RDFNode> selector = selectorFactory.get(eachAttribute.getValue()).withResultType(RDFNode.class);
+                        Selector<RDFNode> selector;
+                        try {
+                            selector = selectorFactory.get(eachAttribute.getValue()).withResultType(RDFNode.class);
+                        } catch (InvalidSelectorSyntaxException e) {
+                            throw new TemplateSyntaxException(start.getLocation(), e);
+                        }
                         List<XMLEvent> events = consumeTree(start, reader);
                         // discard enclosing rdf:join
                         events.remove(events.size() - 1);
                         events.remove(0);
-                        boolean first = true;
-                        for (RDFNode eachNode: selector.result(node)) {
-                            if (!first) {
-                                writer.add(eventFactory.createCharacters(separator));
-                            }
-                            interpolate(events.iterator(), eachNode, writer);
-                            first = false;
+                        JoinAction action = new JoinAction(events, selector, separator);
+                        try {
+                            action.evaluate(this, node, writer, eventFactory);
+                        } catch (Exception e) {
+                            throw new TemplateInterpolationException(start.getLocation(), action, node, e);
                         }
-                    } else if (start.getName().equals(FOR_ACTION_QNAME)) {
+                    } else if (start.getName().equals(ForAction.ACTION_QNAME)) {
                         Attribute eachAttribute = start.getAttributeByName(new QName("each"));
                         if (eachAttribute == null)
-                            throw new TemplateSyntaxException("rdf:for must have an each attribute");
+                            throw new TemplateSyntaxException(start.getLocation(), "rdf:for must have an each attribute");
+                        Selector<RDFNode> selector;
+                        try {
+                            selector = selectorFactory.get(eachAttribute.getValue()).withResultType(RDFNode.class);
+                        } catch (InvalidSelectorSyntaxException e) {
+                            throw new TemplateSyntaxException(start.getLocation(), e);
+                        }
                         List<XMLEvent> events = consumeTree(start, reader);
                         // discard enclosing rdf:for
                         events.remove(events.size() - 1);
                         events.remove(0);
-                        Selector<RDFNode> selector = selectorFactory.get(eachAttribute.getValue()).withResultType(RDFNode.class);
-                        for (RDFNode subNode : selector.result(node)) {
-                            interpolate(events.iterator(), subNode, writer);
+                        ForAction action = new ForAction(events, selector);
+                        try {
+                            action.evaluate(this, node, writer);
+                        } catch (Exception e) {
+                            throw new TemplateInterpolationException(start.getLocation(), action, node, e);
                         }
                     } else {
-                        Attribute ifAttribute = start.getAttributeByName(IF_ACTION_QNAME);
-                        Attribute contentAttribute = start.getAttributeByName(CONTENT_ACTION_QNAME);
-                        Attribute forAttribute = start.getAttributeByName(FOR_ACTION_QNAME);
+                        Attribute ifAttribute = start.getAttributeByName(IfAction.ACTION_QNAME);
+                        Attribute contentAttribute = start.getAttributeByName(ContentAction.ACTION_QNAME);
+                        Attribute forAttribute = start.getAttributeByName(ForAction.ACTION_QNAME);
                         if (ifAttribute != null) {
-                            Selector<?> selector = selectorFactory.get(ifAttribute.getValue());
-                            if (selector.result(node).isEmpty()) {
-                                consumeTree(start, reader);
-                                break;
+                            Selector<?> selector;
+                            try {
+                                selector = selectorFactory.get(ifAttribute.getValue());
+                            } catch (InvalidSelectorSyntaxException e) {
+                                throw new TemplateSyntaxException(ifAttribute.getLocation(), e);
                             }
-                            start = cloneStart(start, cloneAttributesWithout(start, IF_ACTION_QNAME), cloneNamespacesWithoutRdf(start));
-                        }
-                        if (contentAttribute != null && forAttribute != null) {
-                            throw new TemplateSyntaxException("rdf:for and rdf:content cannot both be present on an element");
+                            start = cloneStart(start, cloneAttributesWithout(start, IfAction.ACTION_QNAME), cloneNamespacesWithoutRdf(start));
+                            IfAction action = new IfAction(consumeTree(start, reader), selector, false);
+                            action.evaluate(this, node, writer);
+                        } else if (contentAttribute != null && forAttribute != null) {
+                            throw new TemplateSyntaxException(start.getLocation(), "rdf:for and rdf:content cannot both be present on an element");
                         } else if (contentAttribute != null) {
-                            consumeTree(start, reader);
-                            Selector<?> selector = selectorFactory.get(contentAttribute.getValue());
-                            Object replacement = selector.singleResult(node);
-                            start = interpolateAttributes(start, node);
-                            Set<Attribute> attributes = cloneAttributesWithout(start, CONTENT_ACTION_QNAME);
-                            if (replacement instanceof Literal) {
-                                Literal literal = (Literal) replacement;
-                                if (!StringUtils.isEmpty(literal.getLanguage())) {
-                                    attributes.add(eventFactory.createAttribute(XML_LANG_QNAME, ((Literal) replacement).getLanguage()));
-                                    if (start.getName().getNamespaceURI().equals(XHTML_NS_URI)) {
-                                        String xhtmlPrefixInContext = start.getNamespaceContext().getPrefix(XHTML_NS_URI);
-                                        QName xhtmlLangQNameForContext; // ugh
-                                        if (xhtmlPrefixInContext.isEmpty())
-                                            xhtmlLangQNameForContext = new QName("lang");
-                                        else
-                                            xhtmlLangQNameForContext = new QName(XHTML_NS_URI, "lang", xhtmlPrefixInContext);
-                                        attributes.add(eventFactory.createAttribute(xhtmlLangQNameForContext, literal.getLanguage()));
-                                    }
-                                }
+                            consumeTree(start, reader); // discard
+                            Selector<?> selector;
+                            try {
+                                selector = selectorFactory.get(contentAttribute.getValue());
+                            } catch (InvalidSelectorSyntaxException e) {
+                                throw new TemplateSyntaxException(contentAttribute.getLocation(), e);
                             }
-                            writer.add(eventFactory.createStartElement(start.getName(), attributes.iterator(), start.getNamespaces()));
-                            writeTreeForContent(writer, replacement);
-                            writer.add(eventFactory.createEndElement(start.getName(), start.getNamespaces()));
+                            ContentAction action = new ContentAction(start, selector);
+                            try {
+                                action.evaluate(this, node, writer, eventFactory);
+                            } catch (Exception e) {
+                                throw new TemplateInterpolationException(contentAttribute.getLocation(), action, node, e);
+                            }
                         } else if (forAttribute != null) {
-                            start = cloneStart(start, cloneAttributesWithout(start, FOR_ACTION_QNAME), cloneNamespacesWithoutRdf(start));
+                            Selector<RDFNode> selector;
+                            try {
+                                selector = selectorFactory.get(forAttribute.getValue()).withResultType(RDFNode.class);
+                            } catch (InvalidSelectorSyntaxException e) {
+                                throw new TemplateSyntaxException(forAttribute.getLocation(), e);
+                            }
+                            start = cloneStart(start, cloneAttributesWithout(start, ForAction.ACTION_QNAME), cloneNamespacesWithoutRdf(start));
                             List<XMLEvent> tree = consumeTree(start, reader);
-                            Selector<RDFNode> selector = selectorFactory.get(forAttribute.getValue()).withResultType(RDFNode.class);
-                            for (RDFNode subNode : selector.result(node)) {
-                                interpolate(tree.iterator(), subNode, writer);
+                            ForAction action = new ForAction(tree, selector);
+                            try {
+                                action.evaluate(this, node, writer);
+                            } catch (Exception e) {
+                                throw new TemplateInterpolationException(forAttribute.getLocation(), action, node, e);
                             }
                         } else {
                             start = interpolateAttributes(start, node);
@@ -257,13 +262,18 @@ public class TemplateInterpolator {
     }
     
     @SuppressWarnings("unchecked")
-    private StartElement interpolateAttributes(StartElement start, RDFNode node) {
+    protected StartElement interpolateAttributes(StartElement start, RDFNode node) {
         Set<Attribute> replacementAttributes = new LinkedHashSet<Attribute>();
         for (Iterator<Attribute> it = start.getAttributes(); it.hasNext(); ) {
             Attribute attribute = it.next();
             String replacementValue = attribute.getValue();
-            if (!attribute.getName().getNamespaceURI().equals(NS)) // skip rdf: attributes
-                replacementValue = interpolateString(attribute.getValue(), node); 
+            if (!attribute.getName().getNamespaceURI().equals(NS)) { // skip rdf: attributes
+                try {
+                    replacementValue = interpolateString(attribute.getValue(), node);
+                } catch (Exception e) {
+                    throw new TemplateInterpolationException(attribute.getLocation(), attribute.getValue(), node, e);
+                }
+            }
             replacementAttributes.add(eventFactory.createAttribute(attribute.getName(),
                     replacementValue));
         }
@@ -333,13 +343,23 @@ public class TemplateInterpolator {
             writer.add(eventFactory.createCharacters(template.substring(lastAppendedPos, matcher.start())));
             lastAppendedPos = matcher.end();
             String expression = matcher.group(1);
-            Object replacement = selectorFactory.get(expression).singleResult(node);
-            writeTreeForContent(writer, replacement);
+            Selector<?> selector;
+            try {
+                selector = selectorFactory.get(expression);
+            } catch (InvalidSelectorSyntaxException e) {
+                throw new TemplateSyntaxException(characters.getLocation(), e);
+            }
+            try {
+                Object replacement = selector.singleResult(node);
+                writeTreeForContent(writer, replacement);
+            } catch (Exception e) {
+                throw new TemplateInterpolationException(characters.getLocation(), expression, node, e);
+            }
         }
         writer.add(eventFactory.createCharacters(template.substring(lastAppendedPos)));
     }
     
-    private void writeTreeForContent(XMLEventDestination writer, Object replacement)
+    protected void writeTreeForContent(XMLEventDestination writer, Object replacement)
             throws XMLStreamException {
         if (replacement instanceof RDFNode) {
             RDFNode replacementNode = (RDFNode) replacement;
@@ -363,7 +383,7 @@ public class TemplateInterpolator {
     }
 
     @SuppressWarnings("unchecked")
-    private Set<Attribute> cloneAttributesWithout(StartElement start, QName omit) {
+    protected Set<Attribute> cloneAttributesWithout(StartElement start, QName omit) {
         // clone attributes, but without rdf:content
         Set<Attribute> attributes = new LinkedHashSet<Attribute>();
         for (Iterator<Attribute> it = start.getAttributes(); it.hasNext(); ) {

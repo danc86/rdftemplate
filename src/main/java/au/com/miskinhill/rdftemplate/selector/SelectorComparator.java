@@ -37,8 +37,20 @@ public class SelectorComparator<T extends Comparable<T>> implements Comparator<R
     
     @Override
     public int compare(RDFNode left, RDFNode right) {
-        T leftKey = selector.singleResult(left);
-        T rightKey = selector.singleResult(right);
+        T leftKey;
+        try {
+            leftKey = selector.singleResult(left);
+        } catch (SelectorEvaluationException e) {
+            throw new SelectorEvaluationException("Exception evaluating selector [" + selector + "] " +
+            		"with context node [" + left + "] for comparison", e);
+        }
+        T rightKey;
+        try {
+            rightKey = selector.singleResult(right);
+        } catch (SelectorEvaluationException e) {
+            throw new SelectorEvaluationException("Exception evaluating selector [" + selector + "] " +
+            		"with context node [" + right + "] for comparison", e);
+        }
         int result = leftKey.compareTo(rightKey);
         return reversed ? -result : result;
     }
