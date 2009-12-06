@@ -7,13 +7,12 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-
-import com.hp.hpl.jena.vocabulary.RDF;
-
-import com.hp.hpl.jena.rdf.model.Resource;
+import javax.xml.stream.util.XMLEventConsumer;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.Seq;
+import com.hp.hpl.jena.vocabulary.RDF;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import au.com.miskinhill.rdftemplate.selector.Selector;
@@ -34,7 +33,7 @@ public class JoinAction extends TemplateAction {
         this.separator = separator;
     }
     
-    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventDestination writer, XMLEventFactory eventFactory)
+    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventConsumer writer, XMLEventFactory eventFactory)
             throws XMLStreamException {
         List<RDFNode> result = selector.result(node);
         if (result.size() == 1 && result.get(0).canAs(Resource.class)) {

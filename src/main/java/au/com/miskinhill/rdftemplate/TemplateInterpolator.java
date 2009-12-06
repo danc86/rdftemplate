@@ -28,6 +28,7 @@ import javax.xml.stream.events.EndElement;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.util.XMLEventConsumer;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -56,7 +57,7 @@ public class TemplateInterpolator {
         try {
             StringWriter writer = new StringWriter();
             final XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(writer);
-            XMLEventDestination destination = new XMLEventDestination() {
+            XMLEventConsumer destination = new XMLEventConsumer() {
                 @Override
                 public void add(XMLEvent event) throws XMLStreamException {
                     eventWriter.add(event);
@@ -70,7 +71,7 @@ public class TemplateInterpolator {
     }
     
     @SuppressWarnings("unchecked")
-    public void interpolate(Reader reader, RDFNode node, XMLEventDestination writer) {
+    public void interpolate(Reader reader, RDFNode node, XMLEventConsumer writer) {
         try {
             interpolate(inputFactory.createXMLEventReader(reader), node, writer);
         } catch (XMLStreamException e) {
@@ -79,7 +80,7 @@ public class TemplateInterpolator {
     }
     
     public void interpolate(Reader reader, RDFNode node, final Collection<XMLEvent> destination) {
-        interpolate(reader, node, new XMLEventDestination() {
+        interpolate(reader, node, new XMLEventConsumer() {
             @Override
             public void add(XMLEvent event) {
                 destination.add(event);
@@ -87,7 +88,7 @@ public class TemplateInterpolator {
         });
     }
     
-    public void interpolate(Iterator<XMLEvent> reader, RDFNode node, XMLEventDestination writer)
+    public void interpolate(Iterator<XMLEvent> reader, RDFNode node, XMLEventConsumer writer)
             throws XMLStreamException {
         while (reader.hasNext()) {
             XMLEvent event = reader.next();
@@ -331,7 +332,7 @@ public class TemplateInterpolator {
         return substituted.toString();
     }
     
-    private void interpolateCharacters(XMLEventDestination writer, Characters characters, RDFNode node) throws XMLStreamException {
+    private void interpolateCharacters(XMLEventConsumer writer, Characters characters, RDFNode node) throws XMLStreamException {
         String template = characters.getData();
         if (!SUBSTITUTION_PATTERN.matcher(template).find()) {
             writer.add(characters); // fast path
@@ -359,7 +360,7 @@ public class TemplateInterpolator {
         writer.add(eventFactory.createCharacters(template.substring(lastAppendedPos)));
     }
     
-    protected void writeTreeForContent(XMLEventDestination writer, Object replacement)
+    protected void writeTreeForContent(XMLEventConsumer writer, Object replacement)
             throws XMLStreamException {
         if (replacement instanceof RDFNode) {
             RDFNode replacementNode = (RDFNode) replacement;
@@ -394,7 +395,7 @@ public class TemplateInterpolator {
         return attributes;
     }
     
-    private void writeXMLLiteral(String literal, XMLEventDestination writer)
+    private void writeXMLLiteral(String literal, XMLEventConsumer writer)
             throws XMLStreamException {
         XMLEventReader reader = inputFactory.createXMLEventReader(new StringReader(literal));
         while (reader.hasNext()) {

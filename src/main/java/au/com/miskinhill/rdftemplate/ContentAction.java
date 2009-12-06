@@ -8,6 +8,7 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
+import javax.xml.stream.util.XMLEventConsumer;
 
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
@@ -31,7 +32,7 @@ public class ContentAction extends TemplateAction {
         this.selector = selector;
     }
     
-    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventDestination writer, XMLEventFactory eventFactory)
+    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventConsumer writer, XMLEventFactory eventFactory)
             throws XMLStreamException {
         Object replacement = selector.singleResult(node);
         StartElement start = interpolator.interpolateAttributes(this.start, node);

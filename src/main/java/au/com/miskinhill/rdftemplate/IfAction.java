@@ -5,10 +5,10 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
-
-import org.apache.commons.lang.builder.ToStringBuilder;
+import javax.xml.stream.util.XMLEventConsumer;
 
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 import au.com.miskinhill.rdftemplate.selector.Selector;
 
@@ -27,7 +27,7 @@ public class IfAction extends TemplateAction {
         this.negate = negate;
     }
     
-    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventDestination writer)
+    public void evaluate(TemplateInterpolator interpolator, RDFNode node, XMLEventConsumer writer)
             throws XMLStreamException {
         List<?> selectorResult = condition.result(node);
         if (negate ? selectorResult.isEmpty() : !selectorResult.isEmpty()) {
