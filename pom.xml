@@ -9,13 +9,6 @@
     <name>rdftemplate</name>
     <url>http://code.miskinhill.com.au/</url>
 
-	<repositories>
-        <repository>
-            <id>springsource maven repo</id>
-            <url>http://maven.springframework.org/milestone</url>
-        </repository>
-	</repositories>
-
     <build>
         <plugins>
             <plugin>
@@ -81,7 +74,7 @@
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-context</artifactId>
-        	<version>3.0.0.RC1</version>
+        	<version>3.0.1.RELEASE</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
