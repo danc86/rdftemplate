@@ -20,7 +20,7 @@
     <scm>
         <url>http://code.miskinhill.com.au/hg/</url>
         <connection>scm:hg:http://code.miskinhill.com.au/hg/</connection>
-        <developerConnection>scm:hg:http://code.miskinhill.com.au/hg/</developerConnection>
+        <developerConnection>scm:hg:file://${project.basedir}</developerConnection>
     </scm>
 
     <build>
