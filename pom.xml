@@ -4,7 +4,7 @@
     <groupId>au.com.miskinhill</groupId>
     <artifactId>rdftemplate</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <name>rdftemplate</name>
     <url>http://code.miskinhill.com.au/</url>
     
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>au.com.miskinhill.jena</groupId>
             <artifactId>jena</artifactId>
-            <version>2.6.2.1</version>
+            <version>2.6.2.2-SNAPSHOT</version>
         </dependency>
         <dependency>
         	<groupId>joda-time</groupId>
