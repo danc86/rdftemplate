@@ -8,6 +8,20 @@
     <version>1.0-SNAPSHOT</version>
     <name>rdftemplate</name>
     <url>http://code.miskinhill.com.au/</url>
+    
+    <distributionManagement>
+        <repository>
+            <id>code.miskinhill.com.au</id>
+            <name>Miskin Hill Maven repository</name>
+            <url>dav:http://code.miskinhill.com.au/maven2/</url>
+        </repository>
+    </distributionManagement>
+    
+    <scm>
+        <url>http://code.miskinhill.com.au/hg/</url>
+        <connection>scm:hg:http://code.miskinhill.com.au/hg/</connection>
+        <developerConnection>scm:hg:http://code.miskinhill.com.au/hg/</developerConnection>
+    </scm>
 
     <build>
         <plugins>
