@@ -1,5 +1,6 @@
 package au.com.miskinhill.rdftemplate;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -76,6 +77,12 @@ public class TemplateInterpolator {
             interpolate(inputFactory.createXMLEventReader(reader), node, writer);
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
     
