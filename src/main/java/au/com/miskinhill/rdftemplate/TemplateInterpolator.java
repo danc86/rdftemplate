@@ -1,8 +1,10 @@
 package au.com.miskinhill.rdftemplate;
 
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
@@ -74,6 +76,22 @@ public class TemplateInterpolator {
     public void interpolate(Reader reader, RDFNode node, XMLEventConsumer writer) {
         try {
             interpolate(inputFactory.createXMLEventReader(reader), node, writer);
+        } catch (XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void interpolate(InputStream inputStream, RDFNode node, Writer writer) {
+        try {
+            final XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(writer);
+            XMLEventConsumer destination = new XMLEventConsumer() {
+                @Override
+                public void add(XMLEvent event) throws XMLStreamException {
+                    eventWriter.add(event);
+                }
+            };
+            interpolate(inputFactory.createXMLEventReader(inputStream), node, destination);
         } catch (XMLStreamException e) {
             throw new RuntimeException(e);
         }
