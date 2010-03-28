@@ -20,7 +20,7 @@ public class DateTimeDataType implements RDFDatatype {
         instance = new DateTimeDataType();
     }
     
-    private final DateTimeFormatter parser = ISODateTimeFormat.dateTimeNoMillis();
+    private final DateTimeFormatter format = ISODateTimeFormat.dateTimeNoMillis().withOffsetParsed();
 
     public DateTimeDataType() {
         TypeMapper.getInstance().registerDatatype(this);
@@ -38,7 +38,7 @@ public class DateTimeDataType implements RDFDatatype {
 
     @Override
     public String unparse(Object value) {
-        throw new UnsupportedOperationException();
+        return ((DateTime) value).toString(format);
     }
 
     @Override
@@ -64,7 +64,7 @@ public class DateTimeDataType implements RDFDatatype {
     @Override
     public DateTime parse(String lexicalForm) throws DatatypeFormatException {
         try {
-            return parser.parseDateTime(lexicalForm);
+            return format.parseDateTime(lexicalForm);
         } catch (IllegalArgumentException e) {
             throw new DatatypeFormatException(lexicalForm, this, "Parser barfed");
         }
