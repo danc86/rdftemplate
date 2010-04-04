@@ -10,15 +10,15 @@ import org.antlr.runtime.RecognitionException;
 
 public class AntlrSelectorFactory implements SelectorFactory {
     
-    private AdaptationResolver adaptationResolver = new DefaultAdaptationResolver();
+    private AdaptationFactory adaptationFactory = new DefaultAdaptationFactory();
     private PredicateResolver predicateResolver = new DefaultPredicateResolver();
     private Map<String, String> namespacePrefixMap = Collections.emptyMap();
     
     public AntlrSelectorFactory() {
     }
     
-    public void setAdaptationResolver(AdaptationResolver adaptationResolver) {
-        this.adaptationResolver = adaptationResolver;
+    public void setAdaptationFactory(AdaptationFactory adaptationFactory) {
+        this.adaptationFactory = adaptationFactory;
     }
     
     public void setPredicateResolver(PredicateResolver predicateResolver) {
@@ -35,7 +35,7 @@ public class AntlrSelectorFactory implements SelectorFactory {
         SelectorLexer lexer = new SelectorLexer(stream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         SelectorParser parser = new SelectorParser(tokens);
-        parser.setAdaptationResolver(adaptationResolver);
+        parser.setAdaptationFactory(adaptationFactory);
         parser.setPredicateResolver(predicateResolver);
         parser.setNamespacePrefixMap(namespacePrefixMap);
         try {

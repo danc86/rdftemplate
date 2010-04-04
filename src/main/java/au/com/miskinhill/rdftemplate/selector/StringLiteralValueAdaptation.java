@@ -8,23 +8,17 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.XMLEvent;
 
 import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 
-public class StringLiteralValueAdaptation implements Adaptation<String> {
+public class StringLiteralValueAdaptation extends AbstractAdaptation<String, Literal> {
     
     private static final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     
-    @Override
-    public Class<String> getDestinationType() {
-        return String.class;
+    public StringLiteralValueAdaptation() {
+        super(String.class, new Class<?>[] { }, Literal.class);
     }
-
+    
     @Override
-    public String adapt(RDFNode node) {
-        if (!node.isLiteral()) {
-            throw new SelectorEvaluationException("Attempted to apply #lv to non-literal node " + node);
-        }
-        Literal literal = node.as(Literal.class);
+    protected String doAdapt(Literal literal) {
         if (literal.isWellFormedXML()) {
             try {
                 return stripTags(literal.getLexicalForm());

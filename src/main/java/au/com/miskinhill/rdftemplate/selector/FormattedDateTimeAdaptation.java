@@ -1,21 +1,25 @@
 package au.com.miskinhill.rdftemplate.selector;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import com.hp.hpl.jena.rdf.model.Literal;
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePartial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class FormattedDateTimeAdaptation implements Adaptation<String> {
+import com.hp.hpl.jena.rdf.model.Literal;
+
+public class FormattedDateTimeAdaptation extends AbstractAdaptation<String, Literal> {
     
-    private final String pattern;
-    private final DateTimeFormatter formatter;
+    private String pattern;
+    private DateTimeFormatter formatter;
     
-    public FormattedDateTimeAdaptation(String pattern) {
-        this.pattern = pattern;
+    public FormattedDateTimeAdaptation() {
+        super(String.class, new Class<?>[] { String.class }, Literal.class);
+    }
+    
+    @Override
+    protected void setCheckedArgs(Object[] args) {
+        this.pattern = (String) args[0];
         this.formatter = DateTimeFormat.forPattern(pattern.replace("\"", "'")); // for convenience in XML
     }
 
@@ -24,16 +28,8 @@ public class FormattedDateTimeAdaptation implements Adaptation<String> {
     }
     
     @Override
-    public Class<String> getDestinationType() {
-        return String.class;
-    }
-
-    @Override
-    public String adapt(RDFNode node) {
-        if (!node.isLiteral()) {
-            throw new SelectorEvaluationException("Attempted to apply #formatted-dt to non-literal node " + node);
-        }
-        Object lv = ((Literal) node).getValue();
+    protected String doAdapt(Literal node) {
+        Object lv = node.getValue();
         if (lv instanceof ReadableInstant) {
             ReadableInstant instant = (ReadableInstant) lv;
             return formatter.print(instant);

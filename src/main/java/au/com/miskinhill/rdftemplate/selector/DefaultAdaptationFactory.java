@@ -3,7 +3,9 @@ package au.com.miskinhill.rdftemplate.selector;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DefaultAdaptationResolver implements AdaptationResolver {
+import org.springframework.beans.BeanUtils;
+
+public class DefaultAdaptationFactory implements AdaptationFactory {
     
     private static final Map<String, Class<? extends Adaptation<?>>> ADAPTATIONS = new HashMap<String, Class<? extends Adaptation<?>>>();
     static {
@@ -15,10 +17,14 @@ public class DefaultAdaptationResolver implements AdaptationResolver {
         ADAPTATIONS.put("string-lv", StringLiteralValueAdaptation.class);
         ADAPTATIONS.put("formatted-dt", FormattedDateTimeAdaptation.class);
     }
-
+    
     @Override
-    public Class<? extends Adaptation<?>> getByName(String name) {
-        return ADAPTATIONS.get(name);
+    public Adaptation<?> getByName(String name) {
+        Class<? extends Adaptation<?>> adaptationClass = ADAPTATIONS.get(name);
+        if (adaptationClass == null) {
+            throw new InvalidSelectorSyntaxException("No adaptation named " + name);
+        }
+        return BeanUtils.instantiate(adaptationClass);
     }
 
 }

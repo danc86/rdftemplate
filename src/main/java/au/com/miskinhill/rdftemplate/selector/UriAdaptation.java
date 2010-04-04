@@ -2,21 +2,15 @@ package au.com.miskinhill.rdftemplate.selector;
 
 import com.hp.hpl.jena.rdf.model.Resource;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
-
-public class UriAdaptation implements Adaptation<String> {
+public class UriAdaptation extends AbstractAdaptation<String, Resource> {
     
-    @Override
-    public Class<String> getDestinationType() {
-        return String.class;
+    public UriAdaptation() {
+        super(String.class, new Class<?>[] { }, Resource.class);
     }
     
     @Override
-    public String adapt(RDFNode node) {
-        if (!node.isResource()) {
-            throw new SelectorEvaluationException("Attempted to apply #uri to non-resource node " + node);
-        }
-        return ((Resource) node).getURI();
+    protected String doAdapt(Resource node) {
+        return node.getURI();
     }
 
 }

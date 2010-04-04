@@ -1,14 +1,13 @@
 package au.com.miskinhill.rdftemplate.selector;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
-public class UriSliceAdaptation implements Adaptation<String> {
+public class UriSliceAdaptation extends AbstractAdaptation<String, Resource> {
     
-    private final Integer startIndex;
+    private Integer startIndex;
     
-    public UriSliceAdaptation(Integer startIndex) {
-        this.startIndex = startIndex;
+    public UriSliceAdaptation() {
+        super(String.class, new Class<?>[] { Integer.class }, Resource.class);
     }
     
     public Integer getStartIndex() {
@@ -16,16 +15,13 @@ public class UriSliceAdaptation implements Adaptation<String> {
     }
     
     @Override
-    public Class<String> getDestinationType() {
-        return String.class;
+    protected void setCheckedArgs(Object[] args) {
+        this.startIndex = (Integer) args[0];
     }
-
+    
     @Override
-    public String adapt(RDFNode node) {
-        if (!node.isResource()) {
-            throw new SelectorEvaluationException("Attempted to apply #uri-slice to non-resource node " + node);
-        }
-        String uri = ((Resource) node).getURI();
+    protected String doAdapt(Resource node) {
+        String uri = node.getURI();
         return uri.substring(startIndex);
     }
 

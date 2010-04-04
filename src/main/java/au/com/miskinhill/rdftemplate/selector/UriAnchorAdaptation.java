@@ -1,25 +1,20 @@
 package au.com.miskinhill.rdftemplate.selector;
 
-import com.hp.hpl.jena.rdf.model.RDFNode;
 import com.hp.hpl.jena.rdf.model.Resource;
 
 /**
  * Returns the anchor component of the node's URI (excluding initial #), or the
  * empty string if it has no anchor component.
  */
-public class UriAnchorAdaptation implements Adaptation<String> {
+public class UriAnchorAdaptation extends AbstractAdaptation<String, Resource> {
+    
+    public UriAnchorAdaptation() {
+        super(String.class, new Class<?>[] { }, Resource.class);
+    }
     
     @Override
-    public Class<String> getDestinationType() {
-        return String.class;
-    }
-
-    @Override
-    public String adapt(RDFNode node) {
-        if (!node.isResource()) {
-            throw new SelectorEvaluationException("Attempted to apply #uri-anchor to non-resource node " + node);
-        }
-        String uri = ((Resource) node).getURI();
+    protected String doAdapt(Resource node) {
+        String uri = node.getURI();
         int hashIndex = uri.lastIndexOf('#');
         if (hashIndex < 0)
             return "";

@@ -12,12 +12,12 @@ import java.util.Map;
         throw new InvalidSelectorSyntaxException(e);
     }
     
-    private AdaptationResolver adaptationResolver;
+    private AdaptationFactory adaptationFactory;
     private PredicateResolver predicateResolver;
     private Map<String, String> namespacePrefixMap;
     
-    public void setAdaptationResolver(AdaptationResolver adaptationResolver) {
-        this.adaptationResolver = adaptationResolver;
+    public void setAdaptationFactory(AdaptationFactory adaptationFactory) {
+        this.adaptationFactory = adaptationFactory;
     }
     
     public void setPredicateResolver(PredicateResolver predicateResolver) {
@@ -71,7 +71,6 @@ unionSelector returns [Selector<?> result]
 
 selector returns [Selector<?> result]
 @init {
-    Class<? extends Adaptation<?>> adaptationClass;
     Adaptation<?> adaptation = null;
 }
     : ( ts=traversingSelector { result = ts; }
@@ -80,36 +79,18 @@ selector returns [Selector<?> result]
       ( '#'
         adaptationName=XMLTOKEN
             {
-                adaptationClass = adaptationResolver.getByName($adaptationName.text);
-                if (adaptationClass == null)
-                    throw new InvalidSelectorSyntaxException("No adaptation named " + $adaptationName.text);
+                adaptation = adaptationFactory.getByName($adaptationName.text);
             }
         ( '('
           ( startIndex=INTEGER {
-                                try {
-                                    adaptation = adaptationClass.getConstructor(Integer.class)
-                                            .newInstance(Integer.parseInt($startIndex.text));
-                                } catch (Exception e) {
-                                    throw new InvalidSelectorSyntaxException(e);
-                                }
+                                adaptation.setArgs(new Object[] { Integer.parseInt($startIndex.text) });
                              }
           | sq=SINGLE_QUOTED {
-                                try {
-                                    adaptation = adaptationClass.getConstructor(String.class)
-                                            .newInstance($sq.text);
-                                } catch (Exception e) {
-                                    throw new InvalidSelectorSyntaxException(e);
-                                }
+                                adaptation.setArgs(new Object[] { $sq.text });
                              }
           )
           ')'
-        | {
-               try {
-                   adaptation = adaptationClass.newInstance();
-               } catch (Exception e) {
-                   throw new InvalidSelectorSyntaxException(e);
-               }
-          }
+        | 
         )
         { $result = new SelectorWithAdaptation(result, adaptation); }
       |
