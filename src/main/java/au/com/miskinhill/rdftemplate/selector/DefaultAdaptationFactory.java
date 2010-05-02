@@ -19,6 +19,11 @@ public class DefaultAdaptationFactory implements AdaptationFactory {
     }
     
     @Override
+    public boolean hasName(String name) {
+        return ADAPTATIONS.containsKey(name);
+    }
+    
+    @Override
     public Adaptation<?> getByName(String name) {
         Class<? extends Adaptation<?>> adaptationClass = ADAPTATIONS.get(name);
         if (adaptationClass == null) {
