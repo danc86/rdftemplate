@@ -1,6 +1,6 @@
 package au.com.miskinhill.rdftemplate.view;
 
-import org.deadlit.rdf.util.SdbTemplate;
+import org.deadlit.rdf.util.ModelOperations;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
@@ -10,19 +10,22 @@ import au.com.miskinhill.rdftemplate.selector.SelectorFactory;
 public class RDFTemplateViewResolver extends AbstractTemplateViewResolver implements InitializingBean {
     
     private SelectorFactory selectorFactory;
-    private SdbTemplate sdbTemplate;
+    private ModelOperations modelOperations;
     
     public RDFTemplateViewResolver() {
         super();
         setViewClass(requiredViewClass());
+        setExposeRequestAttributes(false);
+        setExposeSessionAttributes(false);
+        setExposeSpringMacroHelpers(false);
     }
     
     public void setSelectorFactory(SelectorFactory selectorFactory) {
         this.selectorFactory = selectorFactory;
     }
-    
-    public void setSdbTemplate(SdbTemplate sdbTemplate) {
-        this.sdbTemplate = sdbTemplate;
+
+    public void setModelOperations(ModelOperations modelOperations) {
+        this.modelOperations = modelOperations;
     }
     
     @Override
@@ -30,8 +33,8 @@ public class RDFTemplateViewResolver extends AbstractTemplateViewResolver implem
         if (selectorFactory == null) {
             throw new IllegalArgumentException("Property 'selectorFactory' is required");
         }
-        if (sdbTemplate == null) {
-            throw new IllegalArgumentException("Property 'sdbTemplate' is required");
+        if (modelOperations == null) {
+            throw new IllegalArgumentException("Property 'modelOperations' is required");
         }
     }
     
@@ -44,7 +47,7 @@ public class RDFTemplateViewResolver extends AbstractTemplateViewResolver implem
     protected RDFTemplateView buildView(String viewName) throws Exception {
         RDFTemplateView view = (RDFTemplateView) super.buildView(viewName);
         view.setSelectorFactory(selectorFactory);
-        view.setSdbTemplate(sdbTemplate);
+        view.setModelOperations(modelOperations);
         return view;
     }
 

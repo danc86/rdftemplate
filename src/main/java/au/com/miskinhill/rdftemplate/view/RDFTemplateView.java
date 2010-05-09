@@ -8,8 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deadlit.rdf.util.SdbTemplate;
-import org.deadlit.rdf.util.SdbTemplate.ModelExecutionCallbackWithoutResult;
+import org.deadlit.rdf.util.ModelOperations;
+import org.deadlit.rdf.util.ModelOperations.ModelExecutionCallbackWithoutResult;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 import au.com.miskinhill.rdftemplate.TemplateInterpolator;
@@ -24,14 +24,14 @@ public class RDFTemplateView extends AbstractTemplateView {
     
     private TemplateInterpolator templateInterpolator;
     private SelectorFactory selectorFactory;
-    private SdbTemplate sdbTemplate;
+    private ModelOperations modelOperations;
     
     public void setSelectorFactory(SelectorFactory selectorFactory) {
         this.selectorFactory = selectorFactory;
     }
     
-    public void setSdbTemplate(SdbTemplate sdbTemplate) {
-        this.sdbTemplate = sdbTemplate;
+    public void setModelOperations(ModelOperations modelOperations) {
+        this.modelOperations = modelOperations;
     }
     
     @Override
@@ -40,7 +40,7 @@ public class RDFTemplateView extends AbstractTemplateView {
         if (selectorFactory == null) {
             throw new IllegalArgumentException("Property 'selectorFactory' is required");
         }
-        if (sdbTemplate == null) {
+        if (modelOperations == null) {
             throw new IllegalArgumentException("Property 'sdbTemplate' is required");
         }
         this.templateInterpolator = new TemplateInterpolator(selectorFactory);
@@ -52,7 +52,7 @@ public class RDFTemplateView extends AbstractTemplateView {
             throws Exception {
         final InputStream inputStream = getApplicationContext().getResource(getUrl()).getInputStream();
         try {
-            sdbTemplate.withModel(new ModelExecutionCallbackWithoutResult() {
+            modelOperations.withModel(new ModelExecutionCallbackWithoutResult() {
                 @Override
                 protected void executeWithoutResult(Model rdfModel) {
                     Resource node = rdfModel.getResource((String) model.get(NODE_URI_KEY));
