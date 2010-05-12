@@ -8,12 +8,12 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.deadlit.rdf.util.ModelOperations;
-import org.deadlit.rdf.util.ModelOperations.ModelExecutionCallbackWithoutResult;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
 import au.com.miskinhill.rdftemplate.TemplateInterpolator;
 import au.com.miskinhill.rdftemplate.selector.SelectorFactory;
+import au.id.djc.jena.util.ModelOperations;
+import au.id.djc.jena.util.ModelOperations.ModelExecutionCallbackWithoutResult;
 
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;

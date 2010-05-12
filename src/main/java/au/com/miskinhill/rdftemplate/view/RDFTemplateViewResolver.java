@@ -1,11 +1,11 @@
 package au.com.miskinhill.rdftemplate.view;
 
-import org.deadlit.rdf.util.ModelOperations;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 import au.com.miskinhill.rdftemplate.selector.SelectorFactory;
+import au.id.djc.jena.util.ModelOperations;
 
 public class RDFTemplateViewResolver extends AbstractTemplateViewResolver implements InitializingBean {
     
