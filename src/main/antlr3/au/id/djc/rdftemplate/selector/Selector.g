@@ -1,7 +1,7 @@
 grammar Selector;
 
 @parser::header {
-package au.com.miskinhill.rdftemplate.selector;
+package au.id.djc.rdftemplate.selector;
 import java.util.Map;
 }
 
@@ -38,7 +38,7 @@ import java.util.Map;
 }
 
 @lexer::header {
-package au.com.miskinhill.rdftemplate.selector;
+package au.id.djc.rdftemplate.selector;
 }
 
 @lexer::members {
