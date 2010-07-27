@@ -29,6 +29,12 @@
             <releases><enabled>true</enabled></releases>
             <snapshots><enabled>false</enabled></snapshots>
         </repository>
+        <repository>
+            <id>code.miskinhill.com.au</id>
+            <url>http://code.miskinhill.com.au/maven2/</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
     </repositories>
     
     <properties>
