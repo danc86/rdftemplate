@@ -50,7 +50,7 @@ Add the following to your pom.xml:
         <dependency>
             <groupId>au.id.djc</groupId>
             <artifactId>rdftemplate</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
         </dependency>
     </dependencies>
 
