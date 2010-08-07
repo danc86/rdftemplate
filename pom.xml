@@ -36,6 +36,12 @@
             <url>http://www.djc.id.au/</url>
         </developer>
     </developers>
+    <licenses>
+        <license>
+            <name>GPLv3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+        </license>
+    </licenses>
     
     <repositories>
         <repository>
