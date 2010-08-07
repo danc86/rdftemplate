@@ -4,7 +4,7 @@
     <groupId>au.id.djc</groupId>
     <artifactId>rdftemplate</artifactId>
     <packaging>jar</packaging>
-    <version>1.2</version>
+    <version>1.3-SNAPSHOT</version>
     
     <name>rdftemplate</name>
     <url>http://code.djc.id.au/rdftemplate/</url>
