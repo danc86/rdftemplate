@@ -4,7 +4,7 @@ rdftemplate
 Rdftemplate is a library for generating XML documents from RDF data using 
 templates.
 
-The library supports evaluation of “:doc:`selector expressions <selector>`”, which use an 
+The library supports evaluation of “\ :doc:`selector expressions <selector>`\ ”, which use an 
 XPath-inspired syntax for selecting an ordered set of nodes from an arbitrary 
 starting context node.
 
@@ -28,8 +28,7 @@ Development
 -----------
 
 * `Javadoc <http://code.djc.id.au/rdftemplate/javadoc/latest/>`_
-* `Mercurial repository <http://code.djc.id.au/hg/rdftemplate/>`_
-* `Hudson build <http://hudson.miskinhill.com.au/job/rdftemplate/>`_
+* `Git repository <https://github.com/danc86/rdftemplate>`_
 * Send bugs and suggestions to `Dan C <mailto:djc@djc.id.au>`_
 
 Quick start with Maven
