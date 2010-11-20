@@ -1,0 +1,88 @@
+@import url("http://fonts.googleapis.com/css?family=Crimson+Text");
+@import url("http://fonts.googleapis.com/css?family=Inconsolata");
+@import url("http://fonts.googleapis.com/css?family=Nobile");
+
+body {
+    font-family: sans-serif;
+    font-size: 0.9em;
+    line-height: 2.75ex;
+}
+img {
+    border: none;
+}
+
+div.document {
+    margin: 0 auto;
+    max-width: 95ex;
+}
+div.body {
+    margin-right: 27ex;
+}
+div.sidebar {
+    font-size: 0.9em;
+    width: 27ex;
+    margin-left: 80ex;
+    position: fixed;
+}
+
+dt {
+    margin-top: 1.5em;
+}
+dd {
+    margin-left: 1.5em;
+}
+
+pre {
+    background-color: #ffffd0;
+    padding: 0.5em 1em;
+    overflow: auto;
+}
+
+tt.xref {
+    font-weight: bold;
+}
+tt.descname {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+dt:target, .highlighted {
+    background-color: #fbe54e;
+}
+
+div.sidebar h3 {
+    margin: 1em 0 0 0;
+}
+div.sidebar div.toc ul {
+    margin: 0;
+    padding: 0;
+}
+div.sidebar div.toc ul li {
+    margin: 0 0 0 1.25em;
+    padding: 0.5em 0 0 0;
+    line-height: 1.2em;
+}
+div.sidebar input[type=text] {
+    width: 17ex;
+}
+
+a.headerlink {
+    color: #aa0000;
+    text-decoration: none;
+    visibility: hidden;
+    padding-left: 0.35em;
+}
+h1:hover > a.headerlink,
+h2:hover > a.headerlink,
+h3:hover > a.headerlink,
+h4:hover > a.headerlink,
+h5:hover > a.headerlink,
+h6:hover > a.headerlink,
+dt:hover > a.headerlink {
+    visibility: visible;
+}
+
+div.admonition {
+}
+p.admonition-title {
+    font-weight: bold;
+}
