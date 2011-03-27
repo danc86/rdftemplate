@@ -1,0 +1,8 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:rdf="http://code.miskinhill.com.au/rdftemplate/">
+<body>
+
+<a href="http://nowhere.invalid/" rdf:content="dc:title" />
+
+</body>
+</html>

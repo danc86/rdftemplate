@@ -1,7 +1,7 @@
 package au.id.djc.rdftemplate;
 
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -36,6 +36,7 @@ import javax.xml.stream.util.XMLEventConsumer;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.RDFNode;
 
+import au.id.djc.rdftemplate.html.XHTMLEventConsumer;
 import au.id.djc.rdftemplate.selector.InvalidSelectorSyntaxException;
 import au.id.djc.rdftemplate.selector.Selector;
 import au.id.djc.rdftemplate.selector.SelectorFactory;
@@ -47,13 +48,22 @@ public class TemplateInterpolator {
     private final XMLInputFactory inputFactory = XMLInputFactory.newInstance();
     private final XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
     private final XMLEventFactory eventFactory = XMLEventFactory.newInstance();
-    
     private final SelectorFactory selectorFactory;
+    private final boolean htmlCompatible;
     
     public TemplateInterpolator(SelectorFactory selectorFactory) {
+        this(selectorFactory, false);
+    }
+    
+    public TemplateInterpolator(SelectorFactory selectorFactory, boolean htmlCompatible) {
         this.selectorFactory = selectorFactory;
         inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
         outputFactory.setProperty(XMLOutputFactory.IS_REPAIRING_NAMESPACES, true);
+        this.htmlCompatible = htmlCompatible;
+    }
+    
+    public boolean isHtmlCompatible() {
+        return htmlCompatible;
     }
     
     public String interpolate(Reader reader, RDFNode node) {
@@ -115,6 +125,8 @@ public class TemplateInterpolator {
     
     public void interpolate(Iterator<XMLEvent> reader, RDFNode node, XMLEventConsumer writer)
             throws XMLStreamException {
+        if (htmlCompatible)
+            writer = new XHTMLEventConsumer(writer);
         while (reader.hasNext()) {
             XMLEvent event = reader.next();
             switch (event.getEventType()) {
