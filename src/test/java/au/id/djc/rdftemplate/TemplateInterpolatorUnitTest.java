@@ -103,6 +103,16 @@ public class TemplateInterpolatorUnitTest {
         assertThat(result, not(containsString("rdf:")));
     }
     
+    // XXX this breaks with Woodstox 4, file a bug for it
+    @Test
+    public void should_strip_rdf_namespace_declarations_when_no_others() throws Exception {
+        Resource article = model.getResource("http://miskinhill.com.au/journals/test/1:1/article");
+        String result = templateInterpolator.interpolate(
+                new InputStreamReader(this.getClass().getResourceAsStream("namespaces-no-others.xml")), article);
+        assertThat(result, not(containsString("xmlns:")));
+        assertThat(result, not(containsString("rdf:")));
+    }
+    
     @Test
     public void forShouldIterateRdfSeqsInOrder() throws Exception {
         Resource article = model.getResource("http://miskinhill.com.au/journals/test/1:1/multi-author-article");

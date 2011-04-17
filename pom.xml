@@ -158,11 +158,12 @@
             <version>1.2-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
+        <!-- JDK6 StAX implementation sucks, Woodstox 4 sucks, ... -->
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>woodstox-core-asl</artifactId>
-            <version>4.1.0</version>
-            <scope>runtime</scope> <!-- because JDK6 StAX impl is shit -->
+            <artifactId>wstx-asl</artifactId>
+            <version>3.2.9</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
     
