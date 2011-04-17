@@ -16,6 +16,7 @@ public class DefaultAdaptationFactory implements AdaptationFactory {
         ADAPTATIONS.put("comparable-lv", ComparableLiteralValueAdaptation.class);
         ADAPTATIONS.put("string-lv", StringLiteralValueAdaptation.class);
         ADAPTATIONS.put("formatted-dt", FormattedDateTimeAdaptation.class);
+        ADAPTATIONS.put("lang", LanguageAdaptation.class);
     }
     
     @Override

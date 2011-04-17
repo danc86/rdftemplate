@@ -221,4 +221,18 @@ public class SelectorEvaluationUnitTest {
         		result.trim().replaceAll("\\s+", " "));
     }
     
+    @Test
+    public void should_evaluate_lang_adaptation_for_plain_literals() throws Exception {
+        String result = selectorFactory.get("dc:title#lang")
+                .withResultType(String.class).singleResult(journal);
+        assertThat(result, equalTo("en"));
+    }
+    
+    @Test
+    public void should_evaluate_lang_adaptation_for_xml_literals() throws Exception {
+        String result = selectorFactory.get("!sioc:has_container/sioc:content/awol:body#lang")
+                .withResultType(String.class).singleResult(forum);
+        assertThat(result, equalTo("en"));
+    }
+    
 }
