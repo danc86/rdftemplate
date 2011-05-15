@@ -67,28 +67,24 @@ public class TemplateInterpolator {
     }
     
     public String interpolate(Reader reader, RDFNode node) {
-        try {
-            StringWriter writer = new StringWriter();
-            final XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(writer);
-            XMLEventConsumer destination = new XMLEventConsumer() {
-                @Override
-                public void add(XMLEvent event) throws XMLStreamException {
-                    eventWriter.add(event);
-                }
-            };
-            interpolate(reader, node, destination);
-            return writer.toString();
-        } catch (XMLStreamException e) {
-            throw new TemplateSyntaxException(e);            
-        }
+        StringWriter writer = new StringWriter();
+        interpolate(reader, node, writer);
+        return writer.toString();
     }
     
-    @SuppressWarnings("unchecked")
+    public void interpolate(Reader reader, RDFNode node, Writer writer) {
+        interpolate(reader, node, adaptToEventConsumer(writer));
+    }
+    
+    public void interpolate(Reader reader, RDFNode node, Collection<XMLEvent> destination) {
+        interpolate(reader, node, adaptToEventConsumer(destination));
+    }
+    
     public void interpolate(Reader reader, RDFNode node, XMLEventConsumer writer) {
         try {
-            interpolate(inputFactory.createXMLEventReader(reader), node, writer);
+            interpolate(adaptToEventIterator(reader), node, writer);
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+            throw new TemplateSyntaxException(e);
         } finally {
             try {
                 reader.close();
@@ -98,29 +94,73 @@ public class TemplateInterpolator {
         }
     }
     
-    @SuppressWarnings("unchecked")
+    public String interpolate(InputStream inputStream, RDFNode node) {
+        StringWriter writer = new StringWriter();
+        interpolate(inputStream, node, writer);
+        return writer.toString();
+    }
+    
     public void interpolate(InputStream inputStream, RDFNode node, Writer writer) {
+        interpolate(inputStream, node, adaptToEventConsumer(writer));
+    }
+    
+    public void interpolate(InputStream inputStream, RDFNode node, Collection<XMLEvent> destination) {
+        interpolate(inputStream, node, adaptToEventConsumer(destination));
+    }
+    
+    public void interpolate(InputStream inputStream, RDFNode node, XMLEventConsumer writer) {
+        try {
+            interpolate(adaptToEventIterator(inputStream), node, writer);
+        } catch (XMLStreamException e) {
+            throw new TemplateSyntaxException(e);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Iterator<XMLEvent> adaptToEventIterator(Reader reader) {
+        try {
+            return inputFactory.createXMLEventReader(reader);
+        } catch (XMLStreamException e) {
+            throw new TemplateSyntaxException(e);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Iterator<XMLEvent> adaptToEventIterator(InputStream inputStream) {
+        try {
+            return inputFactory.createXMLEventReader(inputStream);
+        } catch (XMLStreamException e) {
+            throw new TemplateSyntaxException(e);
+        }
+    }
+    
+    private XMLEventConsumer adaptToEventConsumer(final Collection<XMLEvent> destination) {
+        return new XMLEventConsumer() {
+            @Override
+            public void add(XMLEvent event) {
+                destination.add(event);
+            }
+        };
+    }
+    
+    private XMLEventConsumer adaptToEventConsumer(Writer writer) {
         try {
             final XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(writer);
-            XMLEventConsumer destination = new XMLEventConsumer() {
+            return new XMLEventConsumer() {
                 @Override
                 public void add(XMLEvent event) throws XMLStreamException {
                     eventWriter.add(event);
                 }
             };
-            interpolate(inputFactory.createXMLEventReader(inputStream), node, destination);
         } catch (XMLStreamException e) {
-            throw new RuntimeException(e);
+            throw new TemplateSyntaxException(e);
         }
-    }
-    
-    public void interpolate(Reader reader, RDFNode node, final Collection<XMLEvent> destination) {
-        interpolate(reader, node, new XMLEventConsumer() {
-            @Override
-            public void add(XMLEvent event) {
-                destination.add(event);
-            }
-        });
     }
     
     public void interpolate(Iterator<XMLEvent> reader, RDFNode node, XMLEventConsumer writer)
@@ -274,7 +314,7 @@ public class TemplateInterpolator {
         }
     }
     
-    private List<XMLEvent> consumeTree(StartElement start, Iterator<XMLEvent> reader) throws XMLStreamException {
+    private List<XMLEvent> consumeTree(StartElement start, Iterator<XMLEvent> reader) {
         List<XMLEvent> events = new ArrayList<XMLEvent>();
         events.add(start);
         Deque<QName> elementStack = new LinkedList<QName>();
