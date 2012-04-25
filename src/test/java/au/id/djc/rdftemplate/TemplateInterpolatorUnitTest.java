@@ -43,7 +43,7 @@ public class TemplateInterpolatorUnitTest {
         Resource journal = model.getResource("http://miskinhill.com.au/journals/test/");
         String result = templateInterpolator.interpolate(
                 new InputStreamReader(this.getClass().getResourceAsStream("replace-subtree.xml")), journal);
-        assertThat(result, containsString("<div xml:lang=\"en\" lang=\"en\">Test Journal of Good Stuff</div>"));
+        assertThat(result, containsString("<div lang=\"en\" xml:lang=\"en\">Test Journal of Good Stuff</div>"));
         assertThat(result, not(containsString("<p>This should all go <em>away</em>!</p>")));
     }
     
