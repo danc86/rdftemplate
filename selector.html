@@ -11,7 +11,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.3-SNAPSHOT',
+        VERSION:     '1.5-SNAPSHOT',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -68,7 +68,7 @@
 <p>Selector expressions are a concise way of selecting some set of nodes in an RDF
 graph, given a particular starting node. For example, given the graph:</p>
 <p class="graphviz">
-<img src="_images/graphviz-1346200c0cb773f0a947cd71784bf0e7054bc9af.png" alt="digraph example {
+<img src="_images/graphviz-2c5d9b4161b1beeb9b58a86d30617b89bc501c7a.png" alt="digraph example {
 node [fontname = &quot;Liberation Sans&quot;, fontsize = 12];
 edge [fontname = &quot;Liberation Sans&quot;, fontsize = 11];
 
@@ -92,7 +92,7 @@ bob -&gt; carol [label = &quot;foaf:knows&quot;] ;
 <tt class="docutils literal"><span class="pre">&lt;bob&gt;</span></tt> would yield two literal nodes: <tt class="docutils literal"><span class="pre">&quot;Alice&quot;</span></tt> and <tt class="docutils literal"><span class="pre">&quot;Carol&quot;</span></tt>.</p>
 <p>The syntax for selector expressions was inspired by <a class="reference external" href="http://www.w3.org/TR/xpath/">XPath</a> syntax, so if you
 are familiar with XPath you will notice many similarities.</p>
-<div class="admonition-todo admonition " id="index-0">
+<div class="admonition-todo admonition" id="index-0">
 <p class="first admonition-title">Todo</p>
 <p class="last">make graphviz output prettier</p>
 </div>
@@ -155,7 +155,7 @@ keyword, as in <tt class="docutils literal"><span class="pre">!dc:creator[type=b
 <div class="section" id="adapting-the-result">
 <span id="adaptations"></span><h3>Adapting the result<a class="headerlink" href="#adapting-the-result" title="Permalink to this headline">¶</a></h3>
 <p>The result of evaluating a traversal is zero or more RDF nodes (in Java,
-implementations of Jena’s <a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNode</span></tt></a> interface). However, it is often necessary
+implementations of Jena’s <a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNode</span></tt></a> interface). However, it is often necessary
 to convert these RDF nodes into a more useful data type, or to perform some
 post-processing on them.</p>
 <p>An adaptation is a function which takes an RDF node and “adapts” it in some
@@ -163,12 +163,12 @@ way. An adaptation can be specified at the end of a selector expression,
 preceded by <tt class="docutils literal"><span class="pre">#</span></tt> and optionally followed by an argument list. For example, the
 expression <tt class="docutils literal"><span class="pre">foaf:knows#uri</span></tt> would evaluate to the URIs of the people known to
 the starting node. The distinction here is important: whereas <tt class="docutils literal"><span class="pre">foaf:knows</span></tt>
-evaluates to zero or more <a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNodes</span></tt></a>, <tt class="docutils literal"><span class="pre">foaf:knows#uri</span></tt> evaluates to zero or
-more <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">Strings</span></tt></a> giving the URI of each node.</p>
+evaluates to zero or more <a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNodes</span></tt></a>, <tt class="docutils literal"><span class="pre">foaf:knows#uri</span></tt> evaluates to zero or
+more <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">Strings</span></tt></a> giving the URI of each node.</p>
 <p>The following adaptations are supported:</p>
 <dl class="docutils">
 <dt><tt class="docutils literal"><span class="pre">uri</span></tt></dt>
-<dd>Returns the URI of the RDF node as a <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>. Throws an exception if applied to a node which is not
+<dd>Returns the URI of the RDF node as a <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>. Throws an exception if applied to a node which is not
 a resource.</dd>
 <dt><tt class="docutils literal"><span class="pre">uri-slice</span></tt></dt>
 <dd>Returns a substring of the URI. This adaptation takes a single integer
@@ -180,11 +180,11 @@ empty string if there is no anchor part.</dd>
 <dt><tt class="docutils literal"><span class="pre">lv</span></tt></dt>
 <dd>Short for “literal value”. Returns the value of the literal RDF node,
 converted to a Java object using Jena’s type conversion facilities (see
-<a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/Literal.html#getValue()"><tt class="xref java java-method docutils literal"><span class="pre">Literal#getValue()</span></tt></a>). Throws an exception if
+<a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/Literal.html#getValue()"><tt class="xref java java-method docutils literal"><span class="pre">Literal#getValue()</span></tt></a>). Throws an exception if
 applied to a node which is not a literal.</dd>
 <dt><tt class="docutils literal"><span class="pre">comparable-lv</span></tt></dt>
 <dd>Essentially the same as <tt class="docutils literal"><span class="pre">lv</span></tt>, but with a runtime check to ensure the
-literal value implements <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/Comparable.html"><tt class="xref java java-class docutils literal"><span class="pre">Comparable</span></tt></a>.
+literal value implements <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html"><tt class="xref java java-class docutils literal"><span class="pre">Comparable</span></tt></a>.
 Only exists for type-safety reasons.</dd>
 <dt><tt class="docutils literal"><span class="pre">string-lv</span></tt></dt>
 <dd>Like <tt class="docutils literal"><span class="pre">lv</span></tt>, but additionally calls toString() on the resulting object to
@@ -195,7 +195,7 @@ literals.</dd>
 literal nodes whose values are represented as Joda datetime types. It takes
 a single string argument, specifying the date-time format to apply. Use it
 like this: <tt class="docutils literal"><span class="pre">dc:created#formatted-dt('d</span> <span class="pre">MMMM</span> <span class="pre">yyyy')</span></tt>.</p>
-<div class="admonition-todo last admonition " id="index-1">
+<div class="admonition-todo last admonition" id="index-1">
 <p class="first admonition-title">Todo</p>
 <p class="last">hacks for Joda are not in stock Jena</p>
 </div>
@@ -221,7 +221,7 @@ indicate a reverse sort.</p>
 <tt class="docutils literal"><span class="pre">!dc:creator(dc:title#comparable-lv)</span></tt> would evaluate to the works created by
 that author, ordered by the title of each work.</p>
 <p>Note that the sort expression must always evaluate to a Java object which
-implements <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/Comparable.html"><tt class="xref java java-class docutils literal"><span class="pre">Comparable</span></tt></a>, so it is typically
+implements <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Comparable.html"><tt class="xref java java-class docutils literal"><span class="pre">Comparable</span></tt></a>, so it is typically
 necessary to apply the <tt class="docutils literal"><span class="pre">comparable-lv</span></tt> adaptation in the sort expression.</p>
 <p>If one expression is not enough to uniquely sort each item in the result,
 multiple sort expressions can be specified using <tt class="docutils literal"><span class="pre">,</span></tt> to separate them.</p>
@@ -251,18 +251,18 @@ relevant for compiling and evaluating selector expressions:</p>
 is parametrised on the result type of the expression.</p>
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.selector.Selector#getResultType()">
-<a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/Class.html"><span>Class&lt;T&gt;</span></a> <tt class="descname">getResultType</tt><big>(</big><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#getResultType()" title="Permalink to this definition">¶</a></dt>
+<a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span>Class&lt;T&gt;</span></a> <tt class="descname">getResultType</tt><big>(</big><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#getResultType()" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the result type of this selector expression. (This is the runtime
 class of the type parameter T.) For a simple traversal this will be
-<a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNode</span></tt></a>, or if an
+<a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><tt class="xref java java-class docutils literal"><span class="pre">RDFNode</span></tt></a>, or if an
 adaptation is applied to the selector expression it will be the result
-type of the adaptation (such as <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>
-or <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/Object.html"><tt class="xref java java-class docutils literal"><span class="pre">Object</span></tt></a>).</p>
+type of the adaptation (such as <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>
+or <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Object.html"><tt class="xref java java-class docutils literal"><span class="pre">Object</span></tt></a>).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.selector.Selector#withResultType(java.lang.Class&lt;Other&gt;)">
-<a class="reference internal" href="#au.id.djc.rdftemplate.selector.Selector" title="au.id.djc.rdftemplate.selector.Selector"><span>Selector&lt;Other&gt;</span></a> <tt class="descname">withResultType</tt><big>(</big><a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/Class.html"><span>Class&lt;Other&gt;</span></a> <em>otherType</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#withResultType(java.lang.Class<Other>)" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#au.id.djc.rdftemplate.selector.Selector" title="au.id.djc.rdftemplate.selector.Selector"><span>Selector&lt;Other&gt;</span></a> <tt class="descname">withResultType</tt><big>(</big><a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/Class.html"><span>Class&lt;Other&gt;</span></a> <em>otherType</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#withResultType(java.lang.Class<Other>)" title="Permalink to this definition">¶</a></dt>
 <dd><p>A convenience method to cast the type parameter of this Selector. Always
 returns this instance. Just a dumb hack to keep Java’s static type
 checking happy.</p>
@@ -270,14 +270,14 @@ checking happy.</p>
 
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.selector.Selector#result(com.hp.hpl.jena.rdf.model.RDFNode)">
-<a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/util/List.html"><span>List&lt;T&gt;</span></a> <tt class="descname">result</tt><big>(</big><a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#result(com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
+<a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/util/List.html"><span>List&lt;T&gt;</span></a> <tt class="descname">result</tt><big>(</big><a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#result(com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluates this selector expression with respect to the given starting
 node, and returns the result.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.selector.Selector#singleResult(com.hp.hpl.jena.rdf.model.RDFNode)">
-<span>T</span> <tt class="descname">singleResult</tt><big>(</big><a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#singleResult(com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
+<span>T</span> <tt class="descname">singleResult</tt><big>(</big><a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.Selector#singleResult(com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
 <dd><p>Evaluates this selector expression with respect to the given starting
 node, and returns the result. If the selector does not evaluate to
 exactly one node, an exception is thrown.</p>
@@ -293,7 +293,7 @@ instances. Instances of this class can safely be shared across threads (for
 example, as singleton beans in Spring).</p>
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.selector.AntlrSelectorFactory#get(java.lang.String)">
-<a class="reference internal" href="#au.id.djc.rdftemplate.selector.Selector" title="au.id.djc.rdftemplate.selector.Selector"><span>Selector&lt;?&gt;</span></a> <tt class="descname">get</tt><big>(</big><a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><span>String</span></a> <em>expression</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.AntlrSelectorFactory#get(java.lang.String)" title="Permalink to this definition">¶</a></dt>
+<a class="reference internal" href="#au.id.djc.rdftemplate.selector.Selector" title="au.id.djc.rdftemplate.selector.Selector"><span>Selector&lt;?&gt;</span></a> <tt class="descname">get</tt><big>(</big><a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><span>String</span></a> <em>expression</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.selector.AntlrSelectorFactory#get(java.lang.String)" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compiles the given selector expression into a <a class="reference internal" href="#au.id.djc.rdftemplate.selector.Selector" title="au.id.djc.rdftemplate.selector.Selector"><tt class="xref java java-class docutils literal"><span class="pre">Selector</span></tt></a>
 instance.</p>
 <div class="highlight-java"><div class="highlight"><pre><span class="n">Selector</span><span class="o">&lt;</span><span class="n">RDFNode</span><span class="o">&gt;</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="s">&quot;foaf:knows&quot;</span><span class="o">).</span><span class="na">withResultType</span><span class="o">(</span><span class="n">RDFNode</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>

@@ -11,7 +11,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.3-SNAPSHOT',
+        VERSION:     '1.5-SNAPSHOT',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -102,7 +102,7 @@ value, an exception will be thrown.)</li>
 will be converted to a Java type using Jena’s type conversion facilities, and
 then toString() will be called on the converted object.</li>
 <li>If any other Java object is encountered, toString() will be called on it.
-This means that when a selector expression evaluates to a <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>, it will be inserted as-is.</li>
+This means that when a selector expression evaluates to a <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><tt class="xref java java-class docutils literal"><span class="pre">String</span></tt></a>, it will be inserted as-is.</li>
 </ul>
 <p>Consider the following example of a template for describing an article in HTML.
 It uses subtitutions in character data and in attribute values:</p>
@@ -168,7 +168,7 @@ subtree will be rendered using that node as the context node. All template
 constructs may be nested inside the subtree, including other <tt class="docutils literal"><span class="pre">rdf:for</span></tt> loops.</p>
 <p>For example, given the following RDF graph:</p>
 <p class="graphviz">
-<img src="_images/graphviz-1346200c0cb773f0a947cd71784bf0e7054bc9af.png" alt="digraph example {
+<img src="_images/graphviz-2c5d9b4161b1beeb9b58a86d30617b89bc501c7a.png" alt="digraph example {
 node [fontname = &quot;Liberation Sans&quot;, fontsize = 12];
 edge [fontname = &quot;Liberation Sans&quot;, fontsize = 11];
 
@@ -298,8 +298,8 @@ evaluate selector expressions when rendering templates.</p>
 
 <dl class="method">
 <dt id="au.id.djc.rdftemplate.TemplateInterpolator#interpolate(java.io.Reader, com.hp.hpl.jena.rdf.model.RDFNode)">
-<a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/lang/String.html"><span>String</span></a> <tt class="descname">interpolate</tt><big>(</big><a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/io/Reader.html"><span>Reader</span></a> <em>reader</em>, <a class="reference external" href="http://jena.sourceforge.net/javadoc/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.TemplateInterpolator#interpolate(java.io.Reader, com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads a template from the given <a class="reference external" href="http://download-llnw.oracle.com/javase/6/docs/api/java/io/Reader.html"><tt class="xref java java-class docutils literal"><span class="pre">Reader</span></tt></a>,
+<a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/lang/String.html"><span>String</span></a> <tt class="descname">interpolate</tt><big>(</big><a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/io/Reader.html"><span>Reader</span></a> <em>reader</em>, <a class="reference external" href="http://jena.apache.org/documentation/javadoc/jena/com/hp/hpl/jena/rdf/model/RDFNode.html"><span>RDFNode</span></a> <em>node</em><big>)</big><a class="headerlink" href="#au.id.djc.rdftemplate.TemplateInterpolator#interpolate(java.io.Reader, com.hp.hpl.jena.rdf.model.RDFNode)" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a template from the given <a class="reference external" href="http://docs.oracle.com/javase/6/docs/api/java/io/Reader.html"><tt class="xref java java-class docutils literal"><span class="pre">Reader</span></tt></a>,
 and renders it using the given node as context. The resulting XML
 document is returned.</p>
 <p>A number of overrides of this method also exist for advanced use cases.
